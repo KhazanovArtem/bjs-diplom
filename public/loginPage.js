@@ -7,7 +7,7 @@ userform.loginFormCallback = data => {
         if (response.success) {
             location.reload();
         } else {
-            alert(response.error);
+            userform.setLoginErrorMessage(response.error);
         }
     });
 }
@@ -15,10 +15,9 @@ userform.loginFormCallback = data => {
 userform.registerFormCallback = data => {
     ApiConnector.register(data, response => {
         if (response.success) {
-            console.log(response);
             location.reload();
         } else {
-            alert(response.error);
+            userform.setRegisterErrorMessage(response.error);
         }
     });
 }

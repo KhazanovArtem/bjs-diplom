@@ -18,25 +18,17 @@ ApiConnector.current(response => {
 
 const board = new RatesBoard();
 
-function getCourse(data) {
-    board.clearTable();
-    const course = {};
-    for (prop in data.Valute) {
-        course[prop] = data.Valute[prop].Value;
-    }
-    board.fillTable(course);
-}
-
-function requestCourse() {
-    $.getJSON("https://www.cbr-xml-daily.ru/daily_json.js", function (data) {
-        if (data != null) {
-            getCourse(data);
-        } else alert("Ошибка запроса");
+function getCourse() {
+    ApiConnector.getStocks(response => {
+        if (response.success) {
+            board.clearTable();
+            board.fillTable(response.data);
+        }
     });
 }
 
-requestCourse();
-setInterval(requestCourse, 60000);
+getCourse();
+setInterval(getCourse, 60000);
 
 
 const manager = new MoneyManager();
@@ -45,9 +37,9 @@ manager.addMoneyCallback = data => {
     ApiConnector.addMoney(data, (response) => {
         if (response.success) {
             ProfileWidget.showProfile(response.data);
-            manager.errorMessageBlock = manager.setMessage(response.success, "Валюта успешно добавлена");
+            manager.setMessage(response.success, "Валюта успешно добавлена");
         } else {
-             manager.errorMessageBlock = manager.setMessage(response.success, "Возникла ошибка при добавлении валюты")
+             manager.setMessage(response.success, "Возникла ошибка при добавлении валюты")
             }
     });
 }
@@ -92,7 +84,8 @@ favorite.addUserCallback = data => {
             favorite.fillTable(response.data);
             manager.updateUsersList(response.data);
             favorite.setMessage(response.success, "Пользователь добавлен в адресную книгу");
-        } else {favorite.setMessage(response.success, response.error);}
+        } else {
+            favorite.setMessage(response.success, response.error);}
     })
 }
 
@@ -103,6 +96,7 @@ favorite.removeUserCallback = data => {
             favorite.fillTable(response.data);
             manager.updateUsersList(response.data);
             favorite.setMessage(response.success, "Пользователь удален");
-        } else {favorite.setMessage(response.success, response.error);}
+        } else {
+            favorite.setMessage(response.success, response.error);}
     })
 }
